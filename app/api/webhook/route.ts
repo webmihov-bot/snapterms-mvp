@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import { db } from "@/lib/db/client";
 import { env } from "@/lib/env";
-import { stripe } from "@/lib/stripe/client";
+import { stripe, stripeConfigured } from "@/lib/stripe/client";
 import { grantCredits, revokeUnspent } from "@/lib/stripe/credits";
 
 export const runtime = "nodejs";
@@ -31,12 +31,14 @@ async function handleSession(session: Stripe.Checkout.Session): Promise<void> {
 
 /** Signature verified against the raw body. Replays are no-ops (unique session+seq). */
 export async function POST(req: Request) {
+  const secret = env().STRIPE_WEBHOOK_SECRET;
+  if (!stripeConfigured() || !secret) return new Response("payments not configured", { status: 503 });
   const sig = req.headers.get("stripe-signature");
   if (!sig) return new Response("missing signature", { status: 400 });
   const raw = await req.text();
   let event: Stripe.Event;
   try {
-    event = stripe().webhooks.constructEvent(raw, sig, env().STRIPE_WEBHOOK_SECRET);
+    event = stripe().webhooks.constructEvent(raw, sig, secret);
   } catch {
     return new Response("invalid signature", { status: 400 });
   }
