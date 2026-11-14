@@ -10,7 +10,7 @@ export function DocumentsCard({ r }: { r: ReportData }) {
       <ul className="divide-y divide-border">
         {r.documents.map((d) => {
           const ok = d.status === "read";
-          const where = d.url ? new URL(d.url).hostname : d.filename ?? (d.sourceType ? D.sourcePaste : D.missing);
+          const where = d.url ? new URL(d.url).hostname : d.filename;
           const source = d.sourceType === "url" ? D.sourceUrl : d.sourceType === "file" ? D.sourceFile : d.sourceType === "paste" ? D.sourcePaste : null;
           const reason = d.status === "blocked" ? (d.reason ? COPY.blocked.reasons[d.reason] ?? D.blocked : D.blocked) : d.status === "missing" ? D.missing : null;
           return (
@@ -18,8 +18,7 @@ export function DocumentsCard({ r }: { r: ReportData }) {
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{d.role === "main" ? D.roleMain : D.roleBonus}</p>
                 <p className="truncate text-sm">
-                  {where}
-                  {source ? ` · ${source}` : ""}
+                  {[where, source].filter(Boolean).join(" · ") || D.missing}
                 </p>
               </div>
               <p className="text-sm tabular">{ok ? fmtChars(d.chars) : reason}</p>

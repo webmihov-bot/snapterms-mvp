@@ -18,8 +18,8 @@ export async function POST(req: Request) {
   const app = env().APP_URL;
   const back = returnTo === "analyse" ? "/analyse" : "/account";
 
-  // same user + pack within the same minute -> same Checkout Session (double-click safe)
-  const idempotencyKey = `checkout:${user.id}:${pack}:${Math.floor(Date.now() / 60_000)}`;
+  // same user + pack + return page within the same minute -> same Checkout Session (double-click safe)
+  const idempotencyKey = `checkout:${user.id}:${pack}:${returnTo}:${Math.floor(Date.now() / 60_000)}`;
   try {
     const session = await stripe().checkout.sessions.create(
       {

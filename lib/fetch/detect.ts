@@ -1,4 +1,4 @@
-export type BlockReason = "http_status" | "interstitial" | "too_short" | "js_shell" | "not_html" | "network" | "timeout" | "too_large" | "unsafe_host";
+export type BlockReason = "http_status" | "not_found" | "interstitial" | "too_short" | "js_shell" | "not_html" | "network" | "timeout" | "too_large" | "unsafe_host";
 
 const INTERSTITIAL = [
   /just a moment\.\.\./i,

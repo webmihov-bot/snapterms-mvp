@@ -11,7 +11,7 @@ const globalForDb = globalThis as unknown as { __snaptermsDb?: Db };
 export function db(): Db {
   if (!globalForDb.__snaptermsDb) {
     // prepare:false keeps us compatible with Supabase's transaction pooler on Vercel
-    const sql = postgres(env().DATABASE_URL, { prepare: false, max: 5, idle_timeout: 20, connect_timeout: 10 });
+    const sql = postgres(env().DATABASE_URL, { prepare: false, max: env().DATABASE_POOL_MAX, idle_timeout: 20, connect_timeout: 10 });
     globalForDb.__snaptermsDb = drizzle(sql, { schema });
   }
   return globalForDb.__snaptermsDb;

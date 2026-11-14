@@ -11,7 +11,7 @@ import { buildReport, documentList, readDocuments } from "@/lib/pipeline/run";
 import { createReportWithQuota, QuotaExhaustedError, quotaStatus, rateLimited } from "@/lib/quota/createReport";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 const body = z.object({
   main: docInputSchema,

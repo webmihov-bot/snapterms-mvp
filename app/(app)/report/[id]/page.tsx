@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ReportView } from "@/components/report/ReportView";
 import { currentUser } from "@/lib/auth/session";
+import { COPY } from "@/lib/copy";
 import { loadOwnReport } from "@/lib/report/load";
 
-export const metadata: Metadata = { robots: { index: false } };
+export const metadata: Metadata = { title: COPY.report.pageTitle, robots: { index: false } };
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

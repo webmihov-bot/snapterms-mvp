@@ -1,7 +1,7 @@
 import { COPY } from "@/lib/copy";
 import type { Verdict } from "@/lib/pipeline/types";
 
-const TONE: Record<Verdict, string> = { good: "text-success", caution: "text-warn", poor: "text-danger" };
+const TONE: Record<Verdict, string> = { good: "text-success", caution: "text-warn", poor: "text-danger", unknown: "text-text-muted" };
 
 /** Semi-circle gauge 0-100. Traffic-light colour is used only here and in risk chips. */
 export function Gauge({ score, verdict, label }: { score: number; verdict: Verdict; label: string }) {

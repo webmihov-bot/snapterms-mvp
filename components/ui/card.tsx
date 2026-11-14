@@ -14,13 +14,14 @@ export function Card({ id, title, line, children, className = "" }: { id?: strin
   );
 }
 
-export function Chip({ tone = "neutral", children }: { tone?: "neutral" | "accent" | "good" | "caution" | "poor"; children: ReactNode }) {
+export function Chip({ tone = "neutral", children }: { tone?: "neutral" | "accent" | "good" | "caution" | "poor" | "unknown"; children: ReactNode }) {
   const tones = {
     neutral: "bg-surface-muted text-ink border-border",
     accent: "bg-accent-soft text-accent border-transparent",
     good: "bg-success-soft text-success border-transparent",
     caution: "bg-warn-soft text-warn border-transparent",
     poor: "bg-danger-soft text-danger border-transparent",
+    unknown: "bg-surface-muted text-text-muted border-border",
   } as const;
   return <span className={`inline-flex items-center rounded-pill border px-3 py-1 text-sm font-semibold ${tones[tone]}`}>{children}</span>;
 }

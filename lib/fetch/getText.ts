@@ -57,7 +57,7 @@ export async function fetchPage(url: string): Promise<FetchedPage> {
     return { ok: false, reason, httpStatus: null, finalUrl: null, text: null };
   }
   if (blockedStatus(res.status) || res.status >= 400) {
-    return { ok: false, reason: "http_status", httpStatus: res.status, finalUrl: res.finalUrl, text: null };
+    return { ok: false, reason: res.status === 404 || res.status === 410 ? "not_found" : "http_status", httpStatus: res.status, finalUrl: res.finalUrl, text: null };
   }
   const ct = res.contentType.toLowerCase();
   let text: string;

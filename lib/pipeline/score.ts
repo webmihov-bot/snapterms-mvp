@@ -14,7 +14,7 @@ export function subscores(m: Money): Record<SubscoreId, number | null> {
   return {
     bonusValue: m.bonusEV !== null && m.bonus ? clamp(50 + 50 * (m.bonusEV / m.bonus)) : null,
     wagering,
-    winCap: m.capRatio !== null ? clamp(Math.min(90, m.capRatio * 5)) : m.bonus !== null ? 100 : null,
+    winCap: m.capRatio !== null ? clamp(Math.min(90, m.capRatio * 5)) : m.maxWinCap !== null ? 50 : m.bonus !== null ? 100 : null,
     cashLock: m.cashLock === null ? null : m.cashLock ? 20 : 100,
     payout: m.payoutFriction,
     license: clamp((m.licenseTier / 3) * 100),
@@ -25,6 +25,8 @@ export function subscores(m: Money): Record<SubscoreId, number | null> {
 /** Weighted sum per profile; missing subscores are dropped and the remaining weights renormalised. */
 export function score(m: Money): Scores {
   const subs = subscores(m);
+  // Without a bonus value or a wagering requirement there is no bonus to give a verdict on.
+  const hasBonusMath = subs.bonusValue !== null || subs.wagering !== null;
   const profiles = {} as Scores["profiles"];
   for (const p of PROFILES) {
     let sum = 0;
@@ -36,7 +38,7 @@ export function score(m: Money): Scores {
       weight += w;
     }
     const overall = weight > 0 ? clamp(sum / weight) : 0;
-    profiles[p] = { overall, verdict: verdictFor(overall) } satisfies ProfileScore;
+    profiles[p] = { overall, verdict: hasBonusMath ? verdictFor(overall) : "unknown" } satisfies ProfileScore;
   }
   return { subscores: subs, profiles };
 }

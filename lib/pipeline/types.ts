@@ -2,7 +2,8 @@ export type ProfileId = "risky" | "balanced" | "protected";
 
 export type SubscoreId = "bonusValue" | "wagering" | "winCap" | "cashLock" | "payout" | "license" | "coverage";
 
-export type Verdict = "good" | "caution" | "poor";
+/** "unknown" = the documents did not state the bonus numbers, so there is nothing to judge. */
+export type Verdict = "good" | "caution" | "poor" | "unknown";
 
 export interface ProfileScore {
   overall: number;

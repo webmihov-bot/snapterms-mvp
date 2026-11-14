@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanHtml } from "@/lib/fetch/clean";
+import { cleanHtml, joinClauseNumbers } from "@/lib/fetch/clean";
 import { classify } from "@/lib/fetch/detect";
 import { getText, type FetchStore } from "@/lib/fetch/getText";
 import { isPrivateAddress } from "@/lib/fetch/safeFetch";
@@ -30,6 +30,21 @@ describe("cleanHtml + classify", () => {
   it("marks pages under 400 visible chars as too short", () => {
     const html = `<html><body><p>Terms coming soon.</p></body></html>`;
     expect(classify(html, cleanHtml(html).text, 0)).toBe("too_short");
+  });
+});
+
+describe("real-world page shapes", () => {
+  it("keeps the text of collapsed accordions (hidden / aria-hidden)", () => {
+    const html = `<html><body><main><h2>Bonus</h2><div hidden><p>The bonus must be wagered 35 times.</p></div><div aria-hidden="true"><p>Maximum bet is 5 EUR.</p></div></main></body></html>`;
+    const t = cleanHtml(html).text;
+    expect(t).toContain("wagered 35 times");
+    expect(t).toContain("Maximum bet is 5 EUR");
+  });
+  it("joins clause numbers that sit in their own element to the heading", () => {
+    const html = `<html><body><ol><li><span>7.3</span><div><p>Withdrawals are processed within 3 days.</p></div></li></ol></body></html>`;
+    expect(cleanHtml(html).text).toBe("7.3 Withdrawals are processed within 3 days.");
+    const lines = (...l: string[]) => l.join(String.fromCharCode(10));
+    expect(joinClauseNumbers(lines("Section 12", "", "Bonuses", "", "Text 2024", "more"))).toBe(lines("Section 12 Bonuses", "", "Text 2024", "more"));
   });
 });
 

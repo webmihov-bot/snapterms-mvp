@@ -7,7 +7,7 @@ function client(apiKey: string, timeoutMs: number): OpenAI {
   const key = `${apiKey.slice(-6)}:${timeoutMs}`;
   let c = clients.get(key);
   if (!c) {
-    c = new OpenAI({ apiKey, timeout: timeoutMs, maxRetries: 1 });
+    c = new OpenAI({ apiKey, timeout: timeoutMs, maxRetries: 0 });
     clients.set(key, c);
   }
   return c;

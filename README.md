@@ -9,12 +9,19 @@ Stack: Next.js 15 (App Router) · TypeScript strict · Tailwind v4 · Supabase (
 ```bash
 pnpm install
 pnpm dev              # local dev server
-pnpm check            # typecheck + copy:check + tests (76 tests, incl. quota race / webhook replay on PGlite)
+pnpm check            # typecheck + copy:check + tests (83 tests, incl. quota race / webhook replay on PGlite)
+pnpm dev:stack        # local stand-ins (Postgres, sign-in, AI) so the whole app runs with no accounts; see below
 pnpm db:migrate       # apply drizzle/*.sql to DATABASE_URL (or DIRECT_DATABASE_URL)
 pnpm llm:check        # run the fixture through the configured provider(s); fails on any wrong number or cost > €0.08
 pnpm llm:check openai # one provider only (set LLM_MODEL_OPENAI)
 pnpm build && pnpm start
 ```
+
+## Run the whole app locally with no accounts
+
+`pnpm dev:stack` starts an in-memory Postgres, a mock sign-in service and a mock AI endpoint, and prints the variables to put in `.env.local`. Then run `pnpm dev`. Sign in with any email; the code is always `123456`. The mock AI always answers with the Northbridge sample extraction, so paste `tests/fixtures/conflict-pair/main.md` and `bonus.md` to get a full report. Stripe checkout is the one thing it cannot fake. Never deploy with these values.
+
+Note: some networks block casino domains at DNS level. From such a network, real casino links show as "The site did not respond" locally even though they work from Vercel.
 
 ## Deploy to production (one time, about 30 minutes)
 
@@ -38,7 +45,7 @@ pnpm build && pnpm start
 The default is Anthropic `claude-haiku-5-5`, chosen to hit the €0.08 per report cost target. Set `ANTHROPIC_API_KEY` and the two price variables in `.env.example`. You can optionally set `LLM_FALLBACK=openai` with its key and model. Run `pnpm llm:check` locally with the production `.env` before deploying.
 
 ### 4. Vercel
-1. Import the repository and set every variable from `.env.example` for Production. `APP_URL` is your final https domain. Generate `APP_SECRET` with `openssl rand -base64 48`.
+1. Import the repository with `main` as the production branch and set every variable from `.env.example` for Production. Pick a function region close to your Supabase region. `APP_URL` is your final https domain. Generate `APP_SECRET` with `openssl rand -base64 48`.
 2. Deploy. If any variable is missing, the server refuses to boot and the logs list each one by name.
 3. Optional: once you have a real report worth showing, put its id in `SAMPLE_REPORT_ID` and the landing page uses it instead of the illustrative sample.
 
@@ -46,6 +53,8 @@ The default is Anthropic `claude-haiku-5-5`, chosen to hit the €0.08 per repor
 - [ ] Sign up with email OTP, then with Google.
 - [ ] Analyse a site with both links: the report shows "2 documents read".
 - [ ] Analyse a site that blocks bots: that document switches to paste, and no report is used.
+- [ ] Analyse general terms only: the verdict says "Not enough data" and no bonus number is shown.
+- [ ] Scroll a report on a phone: the compact verdict bar appears at the top.
 - [ ] Run 3 reports, then a 4th: the paywall opens and shows what the next report would contain.
 - [ ] Buy 1 credit in **test mode** with card `4242 4242 4242 4242`: the credit appears on `/account`. The next report uses it.
 - [ ] Re-send the same event from the Stripe dashboard: the credit count does not change.

@@ -111,6 +111,7 @@ describe("money + score", () => {
       expect(p.overall).toBeGreaterThanOrEqual(0);
       expect(p.overall).toBeLessThanOrEqual(100);
     }
+    expect(s.profiles.balanced.verdict).not.toBe("unknown");
     expect(s.subscores.cashLock).toBe(20);
     expect(s.subscores.license).toBe(100);
   });

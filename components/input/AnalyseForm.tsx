@@ -308,7 +308,7 @@ export function AnalyseForm({ needAge, quota, prefill }: AnalyseFormProps) {
             </div>
           </>
         )}
-        <label className={buttonClass("secondary", "mt-3 cursor-pointer text-sm")}>
+        <label className={buttonClass("secondary", "mt-3 cursor-pointer text-sm focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent")}>
           {A.addFile}
           <input ref={fileRef} type="file" accept=".md,.markdown,.txt,.text,text/plain,text/markdown" multiple className="sr-only" onChange={(e) => void onFiles(e.target.files)} />
         </label>

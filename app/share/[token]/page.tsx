@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 import { loadReportById } from "@/lib/report/load";
 import { verifyShareToken } from "@/lib/share/token";
 
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: COPY.report.sharedTitle, robots: { index: false, follow: false } };
 
 export default async function SharePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

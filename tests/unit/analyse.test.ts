@@ -60,11 +60,12 @@ describe("llm config", () => {
   it("caps char limits by provider", () => {
     const base = { LLM_MODEL: "m", LLM_PRICE_IN_EUR_PER_MTOK: "1", LLM_PRICE_OUT_EUR_PER_MTOK: "1" };
     const a = buildLlmConfig({ ...base, LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: "k" });
-    expect(a.singleCallMaxChars).toBe(51_000);
+    expect(a.singleCallMaxChars).toBe(55_000);
+    expect(a.perDocMaxChars).toBe(45_000);
     const o = buildLlmConfig({ ...base, LLM_PROVIDER: "ollama_cloud", OLLAMA_API_KEY: "k", OLLAMA_BASE_URL: "https://ollama.com/v1" });
     expect(o.primary.tier).toBe("json_only");
-    expect(o.singleCallMaxChars).toBe(16_000);
-    expect(o.perDocMaxChars).toBe(16_000);
+    expect(o.singleCallMaxChars).toBe(20_000);
+    expect(o.perDocMaxChars).toBe(20_000);
   });
   it("rejects an unknown provider", () => {
     expect(() => buildLlmConfig({ LLM_PROVIDER: "gemini" })).toThrowError(/LLM_PROVIDER must be one of/);

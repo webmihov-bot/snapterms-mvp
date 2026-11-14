@@ -25,7 +25,7 @@ import { QuoteProvider } from "./Quote";
 
 type Mode = "owner" | "share" | "sample";
 
-const TONE = { good: "bg-success", caution: "bg-warn", poor: "bg-danger" } as const;
+const TONE = { good: "bg-success", caution: "bg-warn", poor: "bg-danger", unknown: "bg-text-muted" } as const;
 
 function ChangesBanner({ r }: { r: ReportData }) {
   const C = COPY.report.changes;
@@ -71,6 +71,7 @@ export function ReportView({ report: r, mode, cards = "all" }: { report: ReportD
       {mode !== "sample" ? (
         <div
           aria-hidden={!sticky}
+          inert={!sticky}
           className={`fixed inset-x-0 top-0 z-30 border-b border-border bg-surface shadow-sticky transition-opacity duration-150 ${sticky ? "opacity-100" : "pointer-events-none opacity-0"}`}
         >
           <div className="page-x mx-auto flex max-w-content items-center justify-between gap-3 py-2">

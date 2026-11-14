@@ -27,8 +27,8 @@ export interface LlmConfig {
 
 export const PROMPT_VERSION = "extract-2026-10-31";
 
-/** Room kept for the system prompt + schema text inside each provider's char cap. */
-const PROMPT_OVERHEAD_CHARS = 9_000;
+/** Room kept for the system prompt + schema text (~3.7k chars measured) inside each provider's char cap. */
+const PROMPT_OVERHEAD_CHARS = 5_000;
 
 const PROVIDER_DEFAULTS: Record<ProviderId, { tier: Tier; maxInputChars: number; timeoutMs: number; keyVar: string; baseUrlVar?: string }> = {
   anthropic: { tier: "schema_strict", maxInputChars: 60_000, timeoutMs: 45_000, keyVar: "ANTHROPIC_API_KEY" },

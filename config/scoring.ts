@@ -16,7 +16,7 @@ export const WEIGHTS: Record<ProfileId, Record<SubscoreId, number>> = {
   protected: { bonusValue: 0.1, wagering: 0.15, winCap: 0.1, cashLock: 0.15, payout: 0.2, license: 0.2, coverage: 0.1 },
 };
 
-export const VERDICT_THRESHOLDS: { min: number; verdict: Verdict }[] = [
+export const VERDICT_THRESHOLDS: { min: number; verdict: Exclude<Verdict, "unknown"> }[] = [
   { min: 70, verdict: "good" },
   { min: 45, verdict: "caution" },
   { min: 0, verdict: "poor" },
@@ -63,6 +63,6 @@ export function licenseTier(regulator: string | null | undefined): 0 | 1 | 2 | 3
   return 1;
 }
 
-export function verdictFor(score: number): Verdict {
+export function verdictFor(score: number): Exclude<Verdict, "unknown"> {
   return VERDICT_THRESHOLDS.find((t) => score >= t.min)?.verdict ?? "poor";
 }

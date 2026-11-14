@@ -1,6 +1,6 @@
 import "server-only";
 import { createHmac } from "node:crypto";
-import { and, count, desc, eq, gt } from "drizzle-orm";
+import { and, count, desc, eq, gt, lt } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { fetches } from "@/lib/db/schema";
 import { env } from "@/lib/env";
@@ -31,6 +31,13 @@ export function fetchStore(database: Db, ipHash: string, userId: string | null):
     },
     async record(r) {
       await database.insert(fetches).values({ ...r, ipHash, userId, chars: r.text?.length ?? 0 });
+      // No cron in this stack: about 1 in 50 fetches also prunes rows past the cache window.
+      if (Math.random() < 0.02) {
+        await database
+          .delete(fetches)
+          .where(lt(fetches.fetchedAt, new Date(Date.now() - CACHE_MS - 86_400_000)))
+          .catch(() => {});
+      }
     },
   };
 }
