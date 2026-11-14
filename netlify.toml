@@ -1,6 +1,7 @@
 # Netlify deployment. The Next.js runtime (@netlify/plugin-nextjs / OpenNext) is detected automatically.
 [build]
-  command = "pnpm build"
+  # Applies drizzle/*.sql to Supabase (idempotent; warns instead of failing if the DB is unreachable), then builds.
+  command = "pnpm db:migrate --soft && pnpm build"
   publish = ".next"
 
 [build.environment]

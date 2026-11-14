@@ -2,7 +2,7 @@ import { z } from "zod";
 import { currentUser } from "@/lib/auth/session";
 import { env } from "@/lib/env";
 import { error, json, sameOrigin } from "@/lib/http";
-import { priceIdFor, stripe } from "@/lib/stripe/client";
+import { priceIdFor, stripe, stripeConfigured } from "@/lib/stripe/client";
 
 export const runtime = "nodejs";
 
@@ -12,6 +12,7 @@ export async function POST(req: Request) {
   if (!sameOrigin(req)) return error("forbidden", 403);
   const user = await currentUser();
   if (!user) return error("unauthorized", 401);
+  if (!stripeConfigured()) return error("payments_unavailable", 503);
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return error("bad_request", 400);
   const { pack, returnTo } = parsed.data;

@@ -17,10 +17,11 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   /** Connections per server instance. Keep small on serverless; the pooler multiplexes. */
   DATABASE_POOL_MAX: z.preprocess((v) => (v === "" || v == null ? undefined : v), z.coerce.number().int().min(1).max(20).default(5)),
-  STRIPE_SECRET_KEY: z.string().regex(/^(sk|rk)_/, "must start with sk_ or rk_"),
-  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
-  STRIPE_PRICE_1: z.string().startsWith("price_"),
-  STRIPE_PRICE_3: z.string().startsWith("price_"),
+  // Stripe is optional: without it the app runs and checkout answers 503 "payments_unavailable".
+  STRIPE_SECRET_KEY: optional.pipe(z.string().regex(/^(sk|rk)_/, "must start with sk_ or rk_").optional()),
+  STRIPE_WEBHOOK_SECRET: optional.pipe(z.string().startsWith("whsec_").optional()),
+  STRIPE_PRICE_1: optional.pipe(z.string().startsWith("price_").optional()),
+  STRIPE_PRICE_3: optional.pipe(z.string().startsWith("price_").optional()),
 });
 
 export type Env = z.infer<typeof schema>;
