@@ -14,7 +14,9 @@ export function hashIp(ip: string): string {
 }
 
 export function clientIp(headers: Headers): string {
-  return headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip") || "0.0.0.0";
+  // Netlify sets NETLIFY=true and its own client IP header. Trust that header only there: elsewhere a visitor could send it.
+  const netlifyIp = process.env.NETLIFY === "true" ? headers.get("x-nf-client-connection-ip") : null;
+  return netlifyIp || headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip") || "0.0.0.0";
 }
 
 export function fetchStore(database: Db, ipHash: string, userId: string | null): FetchStore {

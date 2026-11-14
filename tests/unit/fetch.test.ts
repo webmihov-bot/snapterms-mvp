@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { cleanHtml, joinClauseNumbers } from "@/lib/fetch/clean";
+import { netlifyCountry } from "@/lib/auth/signedIn";
 import { classify } from "@/lib/fetch/detect";
+import { clientIp } from "@/lib/fetch/store";
 import { getText, type FetchStore } from "@/lib/fetch/getText";
 import { isPrivateAddress } from "@/lib/fetch/safeFetch";
 import { truncateClauses } from "@/lib/llm/truncate";
@@ -65,6 +67,23 @@ describe("getText", () => {
     const cached: FetchStore = { getCached: async () => ({ text: "x".repeat(500), contentHash: "a".repeat(64), fetchedAt: new Date(), finalUrl: null }), record: async () => { throw new Error("no fetch"); } };
     const r = await getText({ role: "main", kind: "url", url: "https://example.com/terms" }, cached);
     expect(r.meta.contentHash).toBe("a".repeat(64));
+  });
+});
+
+describe("host headers", () => {
+  it("reads the visitor country from Netlify's x-nf-geo header", () => {
+    const header = Buffer.from(JSON.stringify({ city: "London", country: { code: "GB", name: "United Kingdom" } })).toString("base64");
+    expect(netlifyCountry(header)).toBe("GB");
+    expect(netlifyCountry("not-base64-json")).toBeNull();
+    expect(netlifyCountry(null)).toBeNull();
+  });
+  it("trusts Netlify's client IP header only when running on Netlify", () => {
+    const both = new Headers({ "x-nf-client-connection-ip": "203.0.113.7", "x-forwarded-for": "198.51.100.1" });
+    expect(clientIp(both)).toBe("198.51.100.1");
+    process.env.NETLIFY = "true";
+    expect(clientIp(both)).toBe("203.0.113.7");
+    delete process.env.NETLIFY;
+    expect(clientIp(new Headers({ "x-forwarded-for": "198.51.100.1, 10.0.0.1" }))).toBe("198.51.100.1");
   });
 });
 

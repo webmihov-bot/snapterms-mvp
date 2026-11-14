@@ -44,10 +44,17 @@ Note: some networks block casino domains at DNS level. From such a network, real
 ### 3. LLM provider
 The default is Anthropic `claude-haiku-5-5`, chosen to hit the €0.08 per report cost target. Set `ANTHROPIC_API_KEY` and the two price variables in `.env.example`. You can optionally set `LLM_FALLBACK=openai` with its key and model. Run `pnpm llm:check` locally with the production `.env` before deploying.
 
-### 4. Vercel
+### 4. Vercel (or Netlify, see 4b)
 1. Import the repository with `main` as the production branch and set every variable from `.env.example` for Production. Pick a function region close to your Supabase region. `APP_URL` is your final https domain. Generate `APP_SECRET` with `openssl rand -base64 48`.
 2. Deploy. If any variable is missing, the server refuses to boot and the logs list each one by name.
 3. Optional: once you have a real report worth showing, put its id in `SAMPLE_REPORT_ID` and the landing page uses it instead of the illustrative sample.
+
+### 4b. Netlify instead of Vercel
+The repo includes `netlify.toml`, so Netlify works as an alternative host.
+1. In Netlify choose **Add new site → Import an existing project**, pick this repository and the `main` branch. Build settings are read from `netlify.toml` (`pnpm build`, Node 22); the Next.js runtime is added automatically.
+2. Under **Site configuration → Environment variables**, add every variable from `.env.example`. Set `APP_URL` to the Netlify (or custom) domain, and use that same domain for the Supabase redirect URL and the Stripe webhook.
+3. Deploy. The visitor's country (for help resources) and IP (for fetch limits) are read from Netlify's own headers.
+4. Check the function time limit on your Netlify plan. One analysis can take up to about a minute in the worst case (10 s fetch plus a slow AI call and one repair call). If your limit is lower, slow analyses end with an error and nothing is charged; a fast model such as `claude-haiku-5-5` normally finishes well inside it.
 
 ### 5. Go-live checklist (Definition of Done)
 - [ ] Sign up with email OTP, then with Google.
